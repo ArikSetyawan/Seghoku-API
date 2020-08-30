@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 const mongoose = require("mongoose");
 const moment = require("moment");
 
@@ -28,8 +27,10 @@ app.use(express.json());
 app.use(logger);
 
 // import router
+const level_user_router = require("./routes/level_user_route.js");
 
 // route
+app.use("/api", level_user_router);
 
 app.listen(5000, () => {
     console.log(`app listening at http://localhost:5000`);
