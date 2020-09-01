@@ -31,12 +31,14 @@ const level_user_router = require("./routes/level_user_route.js");
 const user_router = require("./routes/user_route.js");
 const location_router = require("./routes/location_route.js");
 const tenant_router = require("./routes/tenant_route.js");
+const menu_router = require("./routes/menu_route.js");
 
 // route
 app.use("/api", level_user_router);
 app.use("/api", user_router);
 app.use("/api", location_router);
 app.use("/api", tenant_router);
+app.use("/api", menu_router);
 
 app.listen(5000, () => {
     console.log(`app listening at http://localhost:5000`);

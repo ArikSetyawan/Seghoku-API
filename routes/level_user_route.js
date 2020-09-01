@@ -26,7 +26,7 @@ router.get("/level_user/", async (req, res) => {
     } else {
         // Check if id_user is valid
         if (!mongoose.Types.ObjectId.isValid(queryparams.id_level)) {
-            return res.json({ messsage: "id_level invalid", status: "error" });
+            return res.json({ message: "id_level invalid", status: "error" });
         }
         try {
             // query level_user by id
@@ -91,7 +91,7 @@ router.put("/level_user/", async (req, res) => {
     } else {
         // Check if id_user is valid
         if (!mongoose.Types.ObjectId.isValid(data.id_level)) {
-            return res.json({ messsage: "id_level invalid", status: "error" });
+            return res.json({ message: "id_level invalid", status: "error" });
         }
         // Check user is exist
         const cek_level_user = await Level_User.findOne({ _id: data.id_level });
@@ -129,7 +129,7 @@ router.delete("/level_user/", async (req, res) => {
     } else {
         // Check if id_user is valid
         if (!mongoose.Types.ObjectId.isValid(queryparams.id_level)) {
-            return res.json({ messsage: "id_level invalid", status: "error" });
+            return res.json({ message: "id_level invalid", status: "error" });
         }
         // Check user is exist
         const cek_level_user = await Level_User.findOne({

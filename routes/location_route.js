@@ -21,7 +21,7 @@ router.get("/locations/", async (req, res) => {
         // Check if id_location is valid
         if (!mongoose.Types.ObjectId.isValid(params.id_location)) {
             return res.json({
-                messsage: "id_location invalid",
+                message: "id_location invalid",
                 status: "error",
             });
         }
@@ -32,7 +32,7 @@ router.get("/locations/", async (req, res) => {
             });
             if (query_location === null) {
                 return res.json({
-                    messsage: "Location not found",
+                    message: "Location not found",
                     status: "error",
                 });
             } else {
@@ -52,7 +52,7 @@ router.post("/locations/", async (req, res) => {
     const data = req.body; //get json data
     if (!data.nama_location) {
         return res.json({
-            messsage: "please fill nama_location",
+            message: "please fill nama_location",
             status: "error",
         });
     } else {
@@ -61,16 +61,16 @@ router.post("/locations/", async (req, res) => {
         });
         try {
             const savelocation = await newlocation.save();
-            return res.json({ messsage: "Location saved", status: "success" });
+            return res.json({ message: "Location saved", status: "success" });
         } catch (error) {
             if (error.name === "MongoError") {
                 return res.json({
-                    messsage: "Location already exist",
+                    message: "Location already exist",
                     status: "error",
                 });
             }
             return res.json({
-                messsage: "Internal Server Error",
+                message: "Internal Server Error",
                 status: "error",
             });
         }
@@ -81,14 +81,14 @@ router.put("/locations/", async (req, res) => {
     const data = req.body; //Get json data
     if (!data.id_location || !data.nama_location) {
         return res.json({
-            messsage: "Please fill id_location and nama_location",
+            message: "Please fill id_location and nama_location",
             status: "error",
         });
     } else {
         // Check if id_location is valid
         if (!mongoose.Types.ObjectId.isValid(data.id_location)) {
             return res.json({
-                messsage: "id_location invalid",
+                message: "id_location invalid",
                 status: "error",
             });
         }
@@ -99,7 +99,7 @@ router.put("/locations/", async (req, res) => {
             });
             if (cek_location === null) {
                 return res.json({
-                    messsage: "Location not found",
+                    message: "Location not found",
                     status: "error",
                 });
             } else {
@@ -109,7 +109,7 @@ router.put("/locations/", async (req, res) => {
                     { $set: { nama_location: data.nama_location } }
                 );
                 return res.json({
-                    messsage: "Location updated",
+                    message: "Location updated",
                     status: "success",
                 });
             }
@@ -124,14 +124,14 @@ router.delete("/locations/", async (req, res) => {
     // cek required parameters
     if (!params.id_location) {
         return res.json({
-            messsage: "please fill id_location",
+            message: "please fill id_location",
             status: "error",
         });
     } else {
         // Check if id_location is valid
         if (!mongoose.Types.ObjectId.isValid(params.id_location)) {
             return res.json({
-                messsage: "id_location invalid",
+                message: "id_location invalid",
                 status: "error",
             });
         }
@@ -142,7 +142,7 @@ router.delete("/locations/", async (req, res) => {
             });
             if (cek_location === null) {
                 return res.json({
-                    messsage: "Location not found",
+                    message: "Location not found",
                     status: "error",
                 });
             } else {
@@ -151,7 +151,7 @@ router.delete("/locations/", async (req, res) => {
                     _id: params.id_location,
                 });
                 return res.json({
-                    messsage: "location deleted",
+                    message: "location deleted",
                     status: "success",
                 });
             }
