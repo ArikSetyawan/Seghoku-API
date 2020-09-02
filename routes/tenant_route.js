@@ -8,26 +8,10 @@ const Location = require("../models/location_model");
 router.get("/tenant/", async (req, res) => {
     const params = req.query; // get parameters
     // check parameters
-    if (!params.id_tenant) {
-        try {
-            // get all tenant
-            const query_tenant = await Tenant.find();
-            let data_tenant = [];
-            query_tenant.forEach((item) => {
-                let data = {
-                    id: item._id,
-                    id_user: item.id_user,
-                    id_location: item.id_location,
-                    nama_toko: item.nama_toko,
-                    no_hp: item.no_hp,
-                };
-                data_tenant.push(data);
-            });
-            return res.json({ data: data_tenant, status: "success" });
-        } catch (error) {
-            return res.json(error);
-        }
-    } else {
+    if (params.id_tenant && params.id_location) {
+        return res.json({ message: "Too much parameters", status: "error" });
+    } else if (params.id_tenant) {
+        // Handle Query by id_tenant
         // Check if id_tenant is valid
         if (!mongoose.Types.ObjectId.isValid(params.id_tenant)) {
             return res.json({ message: "id_tenant invalid", status: "error" });
@@ -50,8 +34,66 @@ router.get("/tenant/", async (req, res) => {
                     nama_toko: query_tenant.nama_toko,
                     no_hp: query_tenant.no_hp,
                 };
-                return res.json({ data: data_tenant, status: "success" });
+                return res.json({
+                    data: data_tenant,
+                    status: "success",
+                });
             }
+        } catch (error) {
+            return res.json(error);
+        }
+    } else if (params.id_location) {
+        // Handle Query by id_location
+        // Check if id_location is valid
+        if (!mongoose.Types.ObjectId.isValid(params.id_location)) {
+            return res.json({
+                message: "id_location invalid",
+                status: "error",
+            });
+        }
+        try {
+            // get all tenant base on id_location
+            const query_tenant = await Tenant.find({
+                id_location: params.id_location,
+            });
+            let data_tenant = [];
+            query_tenant.forEach((item) => {
+                let data = {
+                    id: item._id,
+                    id_user: item.id_user,
+                    id_location: item.id_location,
+                    nama_toko: item.nama_toko,
+                    no_hp: item.no_hp,
+                };
+                data_tenant.push(data);
+            });
+            return res.json({
+                data: data_tenant,
+                status: "success",
+            });
+        } catch (error) {
+            return res.json(error);
+        }
+    } else {
+        // Query All Tenant
+        try {
+            // get all tenant
+            const query_tenant = await Tenant.find();
+            let data_tenant = [];
+            query_tenant.forEach((item) => {
+                let data = {
+                    id: item._id,
+                    id_user: item.id_user,
+                    id_location: item.id_location,
+                    nama_toko: item.nama_toko,
+                    no_hp: item.no_hp,
+                };
+                data_tenant.push(data);
+            });
+            return res.json({
+                data: data_tenant,
+                status: "success",
+            });
         } catch (error) {
             return res.json(error);
         }

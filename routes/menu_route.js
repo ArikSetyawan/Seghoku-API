@@ -12,21 +12,9 @@ const FILEDIR = "./public/images/";
 router.get("/menu/", async (req, res) => {
     const params = req.query; //get parameters
     // check parameters
-    if (!params.id_menu) {
-        // query all menu
-        const querymenu = await Menu.find();
-        let data_menu = [];
-        querymenu.forEach((item) => {
-            let data = {
-                id: item._id,
-                nama_menu: item.nama_menu,
-                harga_menu: item.harga_menu,
-                foto_menu: item.foto_menu,
-            };
-            data_menu.push(data);
-        });
-        return res.json({ data: data_menu, status: "success" });
-    } else {
+    if (params.id_menu && params.id_tenant) {
+        return res.json({ message: "Too much parameters", status: "error" });
+    } else if (params.id_menu) {
         // Check if id_menu is valid
         if (!mongoose.Types.ObjectId.isValid(params.id_menu)) {
             return res.json({
@@ -42,6 +30,7 @@ router.get("/menu/", async (req, res) => {
             } else {
                 const data_menu = {
                     id: querymenu._id,
+                    id_tenant: querymenu.id_tenant,
                     nama_menu: querymenu.nama_menu,
                     harga_menu: querymenu.harga_menu,
                     foto_menu: querymenu.foto_menu,
@@ -51,6 +40,43 @@ router.get("/menu/", async (req, res) => {
         } catch (error) {
             return res.json(error);
         }
+    } else if (params.id_tenant) {
+        // Check if id_tenant is valid
+        if (!mongoose.Types.ObjectId.isValid(params.id_tenant)) {
+            return res.json({
+                message: "id_tenant invalid",
+                status: "error",
+            });
+        }
+
+        const querymenu = await Menu.find({ id_tenant: params.id_tenant });
+        let data_menu = [];
+        querymenu.forEach((item) => {
+            let data = {
+                id: item._id,
+                id_tenant: item.id_tenant,
+                nama_menu: item.nama_menu,
+                harga_menu: item.harga_menu,
+                foto_menu: item.foto_menu,
+            };
+            data_menu.push(data);
+        });
+        return res.json({ data: data_menu, status: "success" });
+    } else {
+        // query all menu
+        const querymenu = await Menu.find();
+        let data_menu = [];
+        querymenu.forEach((item) => {
+            let data = {
+                id: item._id,
+                id_tenant: item.id_tenant,
+                nama_menu: item.nama_menu,
+                harga_menu: item.harga_menu,
+                foto_menu: item.foto_menu,
+            };
+            data_menu.push(data);
+        });
+        return res.json({ data: data_menu, status: "success" });
     }
 });
 
