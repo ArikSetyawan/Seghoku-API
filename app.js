@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const port = process.env.PORT || 5000;
 
 // Define Apps
 const app = express();
@@ -43,6 +44,6 @@ app.use("/api", tenant_router);
 app.use("/api", menu_router);
 app.use("/api", files_router);
 
-app.listen(5000, () => {
-    console.log(`app listening at http://localhost:5000`);
+app.listen(port, () => {
+    console.log(`app listening at http://localhost:${port}`);
 });
