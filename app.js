@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const port = process.env.PORT || 5000;
+const upload = require("express-fileupload");
 
 // Define Apps
 const app = express();
@@ -26,6 +27,7 @@ const logger = (req, res, next) => {
 // Middleware
 app.use(express.json({ limit: "50mb" }));
 app.use(express.static("public"));
+app.use(upload());
 app.use(logger);
 
 // import router

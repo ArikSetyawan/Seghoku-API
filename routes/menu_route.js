@@ -82,18 +82,16 @@ router.get("/menu/", async (req, res) => {
 
 router.post("/menu/", async (req, res) => {
     const data = req.body;
-    if (
-        !data.id_tenant ||
-        !data.nama_menu ||
-        !data.harga_menu ||
-        !data.foto_menu ||
-        !data.foto_ext
-    ) {
+    // Check required data
+    if (!data.id_tenant || !data.nama_menu || !data.harga_menu) {
         return res.json({
-            message:
-                "Please fill id_tenant, nama_menu, harga_menu, foto_menu, and foto_ext",
+            message: "Please fill id_tenant, nama_menu, and harga_menu",
             status: "error",
         });
+    }
+    // Check if file included
+    if (!req.files) {
+        return res.json({ message: "please fill FotoMenu", status: "error" });
     } else {
         // Check if id_tenant is valid
         if (!mongoose.Types.ObjectId.isValid(data.id_tenant)) {
@@ -109,26 +107,44 @@ router.post("/menu/", async (req, res) => {
             return res.json({ message: "Tenant Not Found", status: "error" });
         } else {
             try {
-                // Generate Filename
-                const filename = `${crypto.randomBytes(20).toString("hex")}.${
-                    data.foto_ext
-                }`;
+                // Get File
+                const image = req.files.FotoMenu;
+                // Check File if included
+                if (image === undefined) {
+                    return res.json({
+                        message: "please fill FotoMenu",
+                        status: "error",
+                    });
+                }
 
-                // create new menu object
-                const newmenu = new Menu({
-                    id_tenant: data.id_tenant,
-                    nama_menu: data.nama_menu,
-                    harga_menu: data.harga_menu,
-                    foto_menu: filename,
-                });
+                // Get Ext
+                const ext = image.name.split(".")[1];
+                // Check Ext
+                if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+                    // Set Filename
+                    const filename = `${crypto
+                        .randomBytes(20)
+                        .toString("hex")}.${ext}`;
 
-                // save menu
-                const savemenu = await newmenu.save();
+                    // create new menu object
+                    const newmenu = new Menu({
+                        id_tenant: data.id_tenant,
+                        nama_menu: data.nama_menu,
+                        harga_menu: data.harga_menu,
+                        foto_menu: filename,
+                    });
 
-                // Save image
-                const buff = new Buffer(data.foto_menu, "base64");
-                fs.writeFileSync(`${FILEDIR}${filename}`, buff);
+                    // save menu
+                    const savemenu = await newmenu.save();
 
+                    // Save image
+                    const savefile = image.mv(`${FILEDIR}${filename}`);
+                } else {
+                    return res.json({
+                        message: "Extension not allowed",
+                        status: "error",
+                    });
+                }
                 return res.json({ message: "Menu Created", status: "success" });
             } catch (error) {
                 return res.json(error);
@@ -158,7 +174,7 @@ router.put("/menu/", async (req, res) => {
             return res.json({ message: "Menu Not Found", status: "error" });
         }
 
-        if (!data.foto_menu || !data.foto_ext) {
+        if (!req.files) {
             try {
                 const updatemenu = await Menu.updateOne(
                     { _id: data.id_menu },
@@ -175,31 +191,52 @@ router.put("/menu/", async (req, res) => {
             }
         } else {
             try {
-                // delete old photo
-                fs.unlinkSync(`${FILEDIR}${cek_menu.foto_menu}`);
+                // Get File
+                const image = req.files.FotoMenu;
+                // Check File if included
+                if (image === undefined) {
+                    return res.json({
+                        message: "please fill FotoMenu",
+                        status: "error",
+                    });
+                }
 
-                // Generate new Filename
-                const filename = `${crypto.randomBytes(20).toString("hex")}.${
-                    data.foto_ext
-                }`;
+                // Get Ext
+                const ext = image.name.split(".")[1];
+                // Check Ext
+                if (ext === "png" || ext === "jpg" || ext === "jpeg") {
+                    // Set Filename
+                    const filename = `${crypto
+                        .randomBytes(20)
+                        .toString("hex")}.${ext}`;
 
-                // update menu in database
-                const updatemenu = await Menu.updateOne(
-                    { _id: data.id_menu },
-                    {
-                        $set: {
-                            nama_menu: data.nama_menu,
-                            harga_menu: data.harga_menu,
-                            foto_menu: filename,
-                        },
-                    }
-                );
+                    // delete old photo
+                    fs.unlinkSync(`${FILEDIR}${cek_menu.foto_menu}`);
 
-                // Save image
-                const buff = new Buffer(data.foto_menu, "base64");
-                fs.writeFileSync(`${FILEDIR}${filename}`, buff);
+                    // update menu in database
+                    const updatemenu = await Menu.updateOne(
+                        { _id: data.id_menu },
+                        {
+                            $set: {
+                                nama_menu: data.nama_menu,
+                                harga_menu: data.harga_menu,
+                                foto_menu: filename,
+                            },
+                        }
+                    );
 
-                return res.json({ message: "Menu Updated", status: "success" });
+                    // Save image
+                    const savefile = image.mv(`${FILEDIR}${filename}`);
+                    return res.json({
+                        message: "Menu Updated",
+                        status: "success",
+                    });
+                } else {
+                    return res.json({
+                        message: "Extension not allowed",
+                        status: "error",
+                    });
+                }
             } catch (error) {
                 return res.json(error);
             }
