@@ -68,37 +68,41 @@ router.get("/menu/", async (req, res) => {
         const querymenu = await Menu.find();
         let data_menu = [];
 
-        for (const item of querymenu) {
-            let data = {
-                id: item._id,
-                id_tenant: item.id_tenant,
-                nama_menu: item.nama_menu,
-                harga_menu: item.harga_menu,
-                foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
-            };
+        await Promise.all(
+            querymenu.map(async (item) => {
+                let data = {
+                    id: item._id,
+                    id_tenant: item.id_tenant,
+                    nama_menu: item.nama_menu,
+                    harga_menu: item.harga_menu,
+                    foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                };
 
-            // get tenant
-            const query_tenant = await Tenant.findOne({ _id: item.id_tenant });
-            let data_tenant = {
-                id: query_tenant._id,
-                id_location: query_tenant.id_location,
-                nama_toko: query_tenant.nama_toko,
-                no_hp: query_tenant.no_hp,
-            };
+                // get tenant
+                const query_tenant = await Tenant.findOne({
+                    _id: item.id_tenant,
+                });
+                let data_tenant = {
+                    id: query_tenant._id,
+                    id_location: query_tenant.id_location,
+                    nama_toko: query_tenant.nama_toko,
+                    no_hp: query_tenant.no_hp,
+                };
 
-            // get location
-            const query_location = await Location.findOne({
-                _id: query_tenant.id_location,
-            });
-            let data_location = {
-                id: query_location._id,
-                nama_location: query_location.nama_location,
-            };
-            data_tenant.location = data_location;
-            data.tenant = data_tenant;
+                // get location
+                const query_location = await Location.findOne({
+                    _id: query_tenant.id_location,
+                });
+                let data_location = {
+                    id: query_location._id,
+                    nama_location: query_location.nama_location,
+                };
+                data_tenant.location = data_location;
+                data.tenant = data_tenant;
 
-            data_menu.push(data);
-        }
+                data_menu.push(data);
+            })
+        );
         return res.json({ data: data_menu, status: "success" });
     }
 });
