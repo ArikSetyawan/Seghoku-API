@@ -13,7 +13,8 @@ const FILEDIR = "./public/images/";
 router.get("/menu/", async (req, res) => {
     const params = req.query; //get parameters
     // check parameters
-    if (params.id_menu && params.id_tenant) {
+    const jumlah_params = Object.keys(params).length;
+    if (jumlah_params > 1) {
         return res.json({ message: "Too much parameters", status: "error" });
     } else if (params.id_menu) {
         // Check if id_menu is valid
@@ -50,19 +51,87 @@ router.get("/menu/", async (req, res) => {
             });
         }
 
-        const querymenu = await Menu.find({ id_tenant: params.id_tenant });
-        let data_menu = [];
-        querymenu.forEach((item) => {
-            let data = {
+        const querymenu = Menu.find({ id_tenant: params.id_tenant });
+        const querytenant = Tenant.findOne({ _id: params.id_tenant });
+        const menu = await querymenu;
+        const tenant = await querytenant;
+        const query_location = Location.findOne({ _id: tenant.id_location });
+        const location = await query_location;
+        let all_data = {
+            id: tenant._id,
+            id_location: tenant.id_location,
+            nama_toko: tenant.nama_toko,
+            no_hp: tenant.no_hp,
+            location: {
+                id: location._id,
+                nama_location: location.nama_location,
+            },
+        };
+        let menu_item = [];
+        menu.map(async (item) => {
+            let data_menu = {
                 id: item._id,
                 id_tenant: item.id_tenant,
                 nama_menu: item.nama_menu,
                 harga_menu: item.harga_menu,
-                foto_menu: item.foto_menu,
+                foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
             };
-            data_menu.push(data);
+            menu_item.push(data_menu);
         });
-        return res.json({ data: data_menu, status: "success" });
+        all_data.menu = menu_item;
+        return res.json({ data: all_data, status: "success" });
+    } else if (params.id_location) {
+        // Check if id_location is valid
+        if (!mongoose.Types.ObjectId.isValid(params.id_location)) {
+            return res.json({
+                message: "id_location invalid",
+                status: "error",
+            });
+        }
+        // get location
+        const query_location = Location.findOne({ _id: params.id_location });
+        const location = await query_location;
+        if (query_location === null) {
+            return res.json({
+                message: "Menu not found",
+                status: "error",
+            });
+        }
+        // get all tenant in selected location
+        const query_tenant = Tenant.find({ id_location: location._id });
+        const tenants = await query_tenant;
+
+        var send = [];
+
+        await Promise.all(
+            tenants.map(async (tenant) => {
+                const data_tenant = {
+                    id: tenant._id,
+                    id_location: tenant.id_location,
+                    nama_toko: tenant.nama_toko,
+                    no_hp: tenant.no_hp,
+                    location: {
+                        id: location._id,
+                        nama_location: location.nama_location,
+                    },
+                };
+                const query_menu = Menu.find({ id_tenant: tenant._id });
+                const menu = await query_menu;
+                menu.map(async (item) => {
+                    var data = {
+                        id: item._id,
+                        id_tenant: item.id_tenant,
+                        nama_menu: item.nama_menu,
+                        harga_menu: item.harga_menu,
+                        foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                        tenant: data_tenant,
+                    };
+                    send.push(data);
+                });
+            })
+        );
+        console.log(send);
+        return res.json({ data: send, status: "success" });
     } else {
         // query all menu
         const querymenu = await Menu.find();
