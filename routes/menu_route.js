@@ -75,7 +75,7 @@ router.get("/menu/", async (req, res) => {
                     id_tenant: item.id_tenant,
                     nama_menu: item.nama_menu,
                     harga_menu: item.harga_menu,
-                    foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                    foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
                 };
 
                 // get tenant
