@@ -8,7 +8,8 @@ const Location = require("../models/location_model");
 router.get("/tenant/", async (req, res) => {
     const params = req.query; // get parameters
     // check parameters
-    if (params.id_tenant && params.id_location) {
+    const jumlah_params = Object.keys(params).length;
+    if (jumlah_params > 1) {
         return res.json({ message: "Too much parameters", status: "error" });
     } else if (params.id_tenant) {
         // Handle Query by id_tenant
@@ -74,6 +75,22 @@ router.get("/tenant/", async (req, res) => {
         } catch (error) {
             return res.json(error);
         }
+    } else if (params.id_user) {
+        if (!mongoose.Types.ObjectId.isValid(params.id_user)) {
+            return res.json({ message: "id_user invalid", status: "error" });
+        }
+        const get_tenant = Tenant.findOne({ id_user: params.id_user });
+        const tenant = await get_tenant;
+        if (tenant === null) {
+            return res.json({ message: "Tenant Not Found", status: "error" });
+        }
+        const data_tenant = {
+            id: tenant._id,
+            id_location: tenant.id_location,
+            nama_toko: tenant.nama_toko,
+            no_hp: tenant.no_hp,
+        };
+        return res.json({ data: data_tenant, status: "success" });
     } else {
         // Query All Tenant
         try {

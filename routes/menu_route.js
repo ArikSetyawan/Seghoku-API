@@ -74,7 +74,7 @@ router.get("/menu/", async (req, res) => {
                 id_tenant: item.id_tenant,
                 nama_menu: item.nama_menu,
                 harga_menu: item.harga_menu,
-                foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
             };
             menu_item.push(data_menu);
         });
@@ -124,7 +124,7 @@ router.get("/menu/", async (req, res) => {
                         id_tenant: item.id_tenant,
                         nama_menu: item.nama_menu,
                         harga_menu: item.harga_menu,
-                        foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                        foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
                         tenant: data_tenant,
                     };
                     send.push(data);
@@ -144,7 +144,7 @@ router.get("/menu/", async (req, res) => {
                     id_tenant: item.id_tenant,
                     nama_menu: item.nama_menu,
                     harga_menu: item.harga_menu,
-                    foto_menu: `https://seghoku-api.herokuapp.com/api/files/?filename=${item.foto_menu}`,
+                    foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
                 };
 
                 // get tenant
@@ -255,6 +255,7 @@ router.put("/menu/", async (req, res) => {
     if (!data.id_menu || !data.nama_menu || !data.harga_menu) {
         return res.json({
             message: "please fill id_menu, nama_menu, harga_menu",
+            status: "error",
         });
     } else {
         // Check if id_menu is valid
