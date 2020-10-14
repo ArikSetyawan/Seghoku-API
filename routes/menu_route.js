@@ -35,7 +35,7 @@ router.get("/menu/", async (req, res) => {
                     id_tenant: querymenu.id_tenant,
                     nama_menu: querymenu.nama_menu,
                     harga_menu: querymenu.harga_menu,
-                    foto_menu: querymenu.foto_menu,
+                    foto_menu: `http://127.0.0.1:5000/api/files/?filename=${querymenu.foto_menu}`,
                 };
                 return res.json({ data: data_menu, status: "success" });
             }

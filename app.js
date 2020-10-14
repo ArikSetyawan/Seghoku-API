@@ -39,6 +39,7 @@ const tenant_router = require("./routes/tenant_route.js");
 const menu_router = require("./routes/menu_route.js");
 const files_router = require("./routes/files_route.js");
 const login_router = require("./routes/login_route.js");
+const cart_router = require("./routes/cart_route.js");
 
 // route
 app.use("/api", level_user_router);
@@ -48,6 +49,7 @@ app.use("/api", tenant_router);
 app.use("/api", menu_router);
 app.use("/api", files_router);
 app.use("/api", login_router);
+app.use("/api", cart_router);
 
 app.listen(port, () => {
     console.log(`app listening at http://localhost:${port}`);
