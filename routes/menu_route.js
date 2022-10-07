@@ -6,6 +6,8 @@ const Location = require("../models/location_model");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const crypto = require("crypto");
+require("dotenv").config();
+const base_url = process.env.BASE_URL;
 
 // File Dir
 const FILEDIR = "./public/images/";
@@ -35,7 +37,7 @@ router.get("/menu/", async (req, res) => {
                     id_tenant: querymenu.id_tenant,
                     nama_menu: querymenu.nama_menu,
                     harga_menu: querymenu.harga_menu,
-                    foto_menu: `http://127.0.0.1:5000/api/files/?filename=${querymenu.foto_menu}`,
+                    foto_menu: `${base_url}/api/files/?filename=${querymenu.foto_menu}`,
                 };
                 return res.json({ data: data_menu, status: "success" });
             }
@@ -74,7 +76,7 @@ router.get("/menu/", async (req, res) => {
                 id_tenant: item.id_tenant,
                 nama_menu: item.nama_menu,
                 harga_menu: item.harga_menu,
-                foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
+                foto_menu: `${base_url}/api/files/?filename=${item.foto_menu}`,
             };
             menu_item.push(data_menu);
         });
@@ -124,7 +126,7 @@ router.get("/menu/", async (req, res) => {
                         id_tenant: item.id_tenant,
                         nama_menu: item.nama_menu,
                         harga_menu: item.harga_menu,
-                        foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
+                        foto_menu: `${base_url}/api/files/?filename=${item.foto_menu}`,
                         tenant: data_tenant,
                     };
                     send.push(data);
@@ -132,6 +134,47 @@ router.get("/menu/", async (req, res) => {
             })
         );
         return res.json({ data: send, status: "success" });
+    } else if (params.qkeyword) {
+        const qkeyword = params.qkeyword
+        const query_menu = await Menu.find({ nama_menu: {$regex: qkeyword, $options:'i'}})
+        let data_menu = []
+        await Promise.all(
+            query_menu.map(async(item)=>{
+                let data = {
+                    id:item._id,
+                    id_tenant:item.id_tenant,
+                    nama_menu:item.nama_menu,
+                    harga_menu:item.harga_menu,
+                    foto_menu: `${base_url}/api/files/?filename=${item.foto_menu}`,
+                }
+
+                // get tenant
+                const query_tenant = await Tenant.findOne({
+                    _id: item.id_tenant,
+                });
+                let data_tenant = {
+                    id: query_tenant._id,
+                    id_location: query_tenant.id_location,
+                    nama_toko: query_tenant.nama_toko,
+                    no_hp: query_tenant.no_hp,
+                };
+
+                // get location
+                const query_location = await Location.findOne({
+                    _id: query_tenant.id_location,
+                });
+                let data_location = {
+                    id: query_location._id,
+                    nama_location: query_location.nama_location,
+                };
+                data_tenant.location = data_location;
+                data.tenant = data_tenant;
+
+                data_menu.push(data);
+            })
+        )
+        return res.json({ data: data_menu, status: "success" });
+        
     } else {
         // query all menu
         const querymenu = await Menu.find();
@@ -144,7 +187,7 @@ router.get("/menu/", async (req, res) => {
                     id_tenant: item.id_tenant,
                     nama_menu: item.nama_menu,
                     harga_menu: item.harga_menu,
-                    foto_menu: `http://127.0.0.1:5000/api/files/?filename=${item.foto_menu}`,
+                    foto_menu: `${base_url}/api/files/?filename=${item.foto_menu}`,
                 };
 
                 // get tenant
@@ -362,7 +405,7 @@ router.delete("/menu/", async (req, res) => {
         } else {
             try {
                 // delete menu
-                const deletemenu = await Menu.remove({ _id: params.id_menu });
+                const deletemenu = await Menu.deleteOne({ _id: params.id_menu });
 
                 // delete old photo
                 fs.unlinkSync(`${FILEDIR}${cek_menu.foto_menu}`);

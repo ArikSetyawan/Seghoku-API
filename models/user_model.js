@@ -3,20 +3,20 @@ const mongo = require("mongoose");
 const user_schema = mongo.Schema({
     id_level: {
         type: String,
-        require: true,
+        required: true,
     },
     nama: {
         type: String,
-        require: true,
+        required: true,
     },
     email: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     password: {
         type: String,
-        require: true,
+        required: true,
     },
 });
 

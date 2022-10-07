@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+require("dotenv").config();
+const base_url = process.env.BASE_URL;
 
 // import model
 const Cart = require("../models/cart_model");
@@ -36,7 +38,7 @@ router.get("/cart/", async (req, res) => {
                     id_tenant: data_menu.id_tenant,
                     nama_menu: data_menu.nama_menu,
                     harga_menu: data_menu.harga_menu,
-                    photo: `http://127.0.0.1:5000/api/files/?filename=${data_menu.foto_menu}`,
+                    photo: `${base_url}/api/files/?filename=${data_menu.foto_menu}`,
                 },
                 total_harga: data_menu.harga_menu * data_cart.quantity,
             };
@@ -76,7 +78,7 @@ router.get("/cart/", async (req, res) => {
                         id_tenant: data_menu.id_tenant,
                         nama_menu: data_menu.nama_menu,
                         harga_menu: data_menu.harga_menu,
-                        photo: `http://127.0.0.1:5000/api/files/?filename=${data_menu.foto_menu}`,
+                        photo: `${base_url}/api/files/?filename=${data_menu.foto_menu}`,
                     },
                     total_harga: data_menu.harga_menu * item.quantity,
                 };
@@ -110,7 +112,7 @@ router.get("/cart/", async (req, res) => {
                         id_tenant: data_menu.id_tenant,
                         nama_menu: data_menu.nama_menu,
                         harga_menu: data_menu.harga_menu,
-                        photo: `http://127.0.0.1:5000/api/files/?filename=${data_menu.foto_menu}`,
+                        photo: `${base_url}/api/files/?filename=${data_menu.foto_menu}`,
                     },
                     total_harga: data_menu.harga_menu * item.quantity,
                 };
@@ -126,6 +128,7 @@ router.post("/cart/", async (req, res) => {
     if (!data.id_user || !data.id_menu || !data.quantity) {
         return res.json({
             message: "Please fill id_user, id_menu, and quantity",
+            status: "error",
         });
     } else {
         const quantity = Number(data.quantity);
@@ -226,7 +229,7 @@ router.put("/cart/", async (req, res) => {
                 status: "error",
             });
         }
-        const data_cart = await Cart.findOne({ _id: params.id_cart });
+        const data_cart = await Cart.findOne({ _id: data.id_cart });
         if (data_cart === null) {
             return res.json({ message: "Cart not found", status: "error" });
         } else {
@@ -259,7 +262,7 @@ router.delete("/cart/", async (req, res) => {
     if (data_cart === null) {
         return res.json({ message: "Cart not found", status: "error" });
     } else {
-        const remove_cart = await Cart.remove({ _id: data_cart._id });
+        const remove_cart = await Cart.deleteOne({ _id: data_cart._id });
         return res.json({ message: "Cart removed", status: "success" });
     }
 });

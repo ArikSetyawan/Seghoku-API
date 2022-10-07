@@ -3,19 +3,19 @@ const mongoose = require("mongoose");
 const menu_schema = mongoose.Schema({
     id_tenant: {
         type: String,
-        require: true,
+        required: true,
     },
     nama_menu: {
         type: String,
-        require: true,
+        required: true,
     },
     harga_menu: {
         type: Number,
-        require: true,
+        required: true,
     },
     foto_menu: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
 });

@@ -147,7 +147,7 @@ router.delete("/locations/", async (req, res) => {
                 });
             } else {
                 // delete location
-                const deletelocation = await Location.remove({
+                const deletelocation = await Location.deleteOne({
                     _id: params.id_location,
                 });
                 return res.json({

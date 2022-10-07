@@ -1,25 +1,39 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const momenttz = require("moment-timezone");
 const port = process.env.PORT || 5000;
 const upload = require("express-fileupload");
+require("dotenv").config();
 
 // Define Apps
 const app = express();
 
 // DB
-const db_url =
-    "mongodb+srv://ariksetyawan:minuman1234@cluster0.xfhcs.mongodb.net/Seghoku?retryWrites=true&w=majority";
+// DB Atlas
+const db_url = process.env.DB_URL
+
+// DB Local
+// const db_url = "mongodb://localhost:27017/Seghoku";
+
 mongoose.connect(
     db_url,
     { useNewUrlParser: true, useUnifiedTopology: true },
     () => console.log("db connected")
 );
 
+const now = momenttz(Date.now())
+    .tz("Asia/Jakarta")
+    .format("YYYY-MM-DD HH:mm:ss");
+
 // Custom Function
 const logger = (req, res, next) => {
     console.log(
-        `=> ${moment().format()} ${req.originalUrl} - ${req.method} --`
+        `=> ${momenttz(Date.now())
+            .tz("Asia/Jakarta")
+            .format("YYYY-MM-DD HH:mm:ss")} ${req.originalUrl} - ${
+            req.method
+        } --`
     );
     next();
 };
@@ -40,6 +54,7 @@ const menu_router = require("./routes/menu_route.js");
 const files_router = require("./routes/files_route.js");
 const login_router = require("./routes/login_route.js");
 const cart_router = require("./routes/cart_route.js");
+const checkout_router = require("./routes/checkout_route.js");
 
 // route
 app.use("/api", level_user_router);
@@ -50,6 +65,7 @@ app.use("/api", menu_router);
 app.use("/api", files_router);
 app.use("/api", login_router);
 app.use("/api", cart_router);
+app.use("/api", checkout_router);
 
 app.listen(port, () => {
     console.log(`app listening at http://localhost:${port}`);

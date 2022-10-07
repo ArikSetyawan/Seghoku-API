@@ -3,21 +3,21 @@ const mongoose = require("mongoose");
 const tenant_schema = mongoose.Schema({
     id_user: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     id_location: {
         type: String,
-        require: true,
+        required: true,
     },
     nama_toko: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
     no_hp: {
         type: String,
-        require: true,
+        required: true,
         unique: true,
     },
 });

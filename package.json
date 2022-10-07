@@ -10,13 +10,16 @@
     "author": "Setya",
     "license": "ISC",
     "dependencies": {
+        "axios": "^0.20.0",
+        "dotenv": "^16.0.3",
         "express": "^4.17.1",
         "express-fileupload": "^1.2.0",
         "moment": "^2.27.0",
+        "moment-timezone": "^0.5.31",
         "mongoose": "^5.10.1"
     },
     "devDependencies": {
-        "nodemon": "^2.0.4"
+        "nodemon": "^2.0.7"
     },
     "engines": {
         "node": "14.5.0"

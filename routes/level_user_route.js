@@ -144,7 +144,7 @@ router.delete("/level_user/", async (req, res) => {
         } else {
             try {
                 // Delete Level User
-                const delete_level_user = await Level_User.remove({
+                const delete_level_user = await Level_User.deleteOne({
                     _id: queryparams.id_level,
                 });
                 return res.json({

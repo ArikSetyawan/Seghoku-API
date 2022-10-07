@@ -264,7 +264,7 @@ router.delete("/tenant/", async (req, res) => {
         } else {
             try {
                 // delete tenant
-                const deletetenant = await Tenant.remove({
+                const deletetenant = await Tenant.deleteOne({
                     _id: params.id_tenant,
                 });
                 return res.json({

@@ -146,7 +146,7 @@ router.delete("/users/", async (req, res) => {
                 });
             }
             // Delete User
-            const delete_user = await User.remove({ _id: params.id_user });
+            const delete_user = await User.deleteOne({ _id: params.id_user });
             return res.json({ message: "User Deleted", status: "Success" });
         } catch (error) {
             return res.json(error);
